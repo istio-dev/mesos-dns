@@ -92,6 +92,7 @@ type Task struct {
 	Statuses      []Status `json:"statuses"`
 	Resources     `json:"resources"`
 	DiscoveryInfo DiscoveryInfo `json:"discovery"`
+	ExecutorID    string        `json:"executor_id"` // ExecutorID
 
 	// SlaveIPs is used internally and contains ipv4, ipv6, or both
 	SlaveIPs []string `json:"-"`
@@ -109,6 +110,21 @@ func (t *Task) IP(srcs ...string) string {
 	}
 	return ""
 }
+
+/*
+func (t *Task) ValueOfLableDefined(sf []Framework, nameLabel string) string {
+	if t.ExecutorID != "" {
+		for i := range sf.Executors {
+			if sf[i].Executors[i].ExecutorID == t.ExecutorID {
+				for j := range sf.Executors[i].Labels {
+					if sf.Executors[i].Labels[j].Key == nameLabel {
+						return sf.Executors[i].Labels[j].Value
+					}
+				}
+			}
+		}
+	}
+} */
 
 // IPs returns a slice of IPs sourced from the given sources with ascending
 // priority.
@@ -220,6 +236,7 @@ type Framework struct {
 	PID      PID    `json:"pid"`
 	Name     string `json:"name"`
 	Hostname string `json:"hostname"`
+	//Executor `json:"executors"`Executors []
 }
 
 // HostPort returns the hostname and port where a framework's scheduler is
@@ -230,6 +247,11 @@ func (f Framework) HostPort() (string, string) {
 	}
 	return f.Hostname, ""
 }
+
+/* type Executor struct {
+	ExecutorID string  `json:"executor_id"` // ExecutorID
+	Labels     []Label `json:"labels"`
+} */
 
 // Slave holds a slave as defined in the /state Mesos HTTP endpoint.
 type Slave struct {

@@ -6,6 +6,7 @@ import (
 	"crypto/sha1" // nolint: gosec
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"strconv"
@@ -434,11 +435,37 @@ func (rg *RecordGenerator) taskContextRecord(ctx context, task state.Task, f sta
 	canonical := ctx.taskName + "-" + ctx.taskID + "-" + ctx.slaveID + "." + fname
 	arec := ctx.taskName + "." + fname
 
+	//keep task.Name
+	canonical1 := task.Name + "-" + ctx.taskID + "-" + ctx.slaveID + "." + fname
+
+	//taskName := task.ValueOfLableDefined(f.Executors, "istio")
+
+	//canonical1 := taskName + "-" + ctx.taskID + "-" + ctx.slaveID + "." + fname
+	arec1 := task.Name + "." + fname
+
 	// Only use the first ipv4 and first ipv6 found in sources
 	tIPs := ipsTo4And6(ctx.taskIPs)
 	for _, tIP := range tIPs {
+		rg.insertTaskRR(arec1+tail, tIP.String(), rrsKindForIP(tIP), enumTask)
+		rg.insertTaskRR(canonical1+tail, tIP.String(), rrsKindForIP(tIP), enumTask)
 		rg.insertTaskRR(arec+tail, tIP.String(), rrsKindForIP(tIP), enumTask)
 		rg.insertTaskRR(canonical+tail, tIP.String(), rrsKindForIP(tIP), enumTask)
+
+		fmt.Println("TTTTTTTTTTTTTT arec ", arec)
+		fmt.Println("TTTTTTTTTTTTTT tail ", tail)
+		fmt.Println("TTTTTTTTTTTTTT arec+tail ", arec+tail)
+
+		fmt.Println("TTTTTTTTTTTTTT canonical ", canonical)
+		fmt.Println("TTTTTTTTTTTTTT tail ", tail)
+		fmt.Println("TTTTTTTTTTTTTT canonical+tail ", canonical+arec)
+
+		fmt.Println("TTTTTTTTTTTTTT arec1", arec1)
+		fmt.Println("TTTTTTTTTTTTTT tail ", tail)
+		fmt.Println("TTTTTTTTTTTTTT arec1+tail ", arec1+tail)
+
+		fmt.Println("TTTTTTTTTTTTTT canonical1 ", canonical1)
+		fmt.Println("TTTTTTTTTTTTTT tail ", tail)
+		fmt.Println("TTTTTTTTTTTTTT canonical1+tail ", canonical1+arec)
 	}
 
 	// slaveIPs already only has at most one ipv4 and one ipv6
